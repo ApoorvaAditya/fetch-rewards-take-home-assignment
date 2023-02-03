@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Fetch Rewards Take Home</string>
+    <string name="error_text">Error</string>
+    <string name="retry_button_text">Retry</string>
+    <string name="error_with_reason_text">Error encountered: %1$s</string>
+    <string name="list_id_text">List ID: %1$d</string>
 </resources>

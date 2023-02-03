@@ -43,7 +43,7 @@ class ItemExpandableListAdapter(
         return true
     }
 
-    override fun getGroupView(listIdIndex: Int, p1: Boolean, view: View?, p3: ViewGroup?): View {
+    override fun getGroupView(listIdIndex: Int, p1: Boolean, view: View?, viewGroup: ViewGroup?): View {
         // Get the listId for the group view
         val listId = getGroup(listIdIndex) as Int
 
@@ -57,7 +57,7 @@ class ItemExpandableListAdapter(
 
         // Set the titleTextView text to the listId
         val listTitleTextView: TextView = expandableListGroupItemView.findViewById(R.id.titleTextView)
-        listTitleTextView.text = "List ID: $listId"
+        listTitleTextView.text = String.format(ctx.resources.getString(R.string.list_id_text), listId)
 
         return expandableListGroupItemView
     }

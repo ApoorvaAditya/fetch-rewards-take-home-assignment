@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.*
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.fetchrewardstakehome.R
 import com.example.fetchrewardstakehome.adapters.ItemExpandableListAdapter
@@ -36,10 +35,10 @@ class MainActivity : AppCompatActivity() {
         expandableListView = findViewById(R.id.expandableListView)
 
         // Get the ItemViewModel instance
-        itemsViewModel = ViewModelProvider(this).get(ItemsViewModel::class.java)
+        itemsViewModel = ViewModelProvider(this)[ItemsViewModel::class.java]
 
         // Setup Observer for itemsLiveData
-        itemsViewModel.itemsLiveData.observe(this, Observer { asyncStatus ->
+        itemsViewModel.itemsLiveData.observe(this) { asyncStatus ->
             when (asyncStatus) {
                 is AsyncStatus.Loading -> {
                     onLoading()
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
                     onData(asyncStatus.value)
                 }
             }
-        })
+        }
     }
 
 
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity() {
     private fun onFailure(message: String?) {
         hideLoadingProgressBar()
         errorLinearLayout.visibility = VISIBLE
-        errorTextView.text = "Error encountered: $message"
+        errorTextView.text = String.format(resources.getString(R.string.error_with_reason_text), message.toString())
     }
 
     private fun onLoading() {
