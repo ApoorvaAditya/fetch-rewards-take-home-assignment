@@ -1,7 +1,6 @@
 package com.example.fetchrewardstakehome.adapters
 
 import android.content.Context
-import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,35 +44,45 @@ class ItemExpandableListAdapter(
     }
 
     override fun getGroupView(listIdIndex: Int, p1: Boolean, view: View?, p3: ViewGroup?): View {
-        val listTitle = getGroup(listIdIndex) as Int
-        var expandableListGroupView: View
-        if (view == null) {
-            val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            expandableListGroupView = inflater.inflate(R.layout.expandable_list_group_item, null)
+        // Get the listId for the group view
+        val listId = getGroup(listIdIndex) as Int
+
+        // Create a new ExpandableListGroupItem if the view is null
+        val expandableListGroupItemView: View = if (view != null) {
+            view
         } else {
-            expandableListGroupView = view
+            val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            inflater.inflate(R.layout.expandable_list_group_item, null)
         }
-        val listTitleTextView: TextView = expandableListGroupView.findViewById(R.id.titleTextView)
-        listTitleTextView.setTypeface(null, Typeface.BOLD)
-        listTitleTextView.text = listTitle.toString()
-        return expandableListGroupView
+
+        // Set the titleTextView text to the listId
+        val listTitleTextView: TextView = expandableListGroupItemView.findViewById(R.id.titleTextView)
+        listTitleTextView.text = "List ID: $listId"
+
+        return expandableListGroupItemView
     }
 
     override fun getChildView(listIdIndex: Int, itemIndex: Int, p2: Boolean, view: View?, p4: ViewGroup?): View {
+        // Get the item for the child view
         val item = getChild(listIdIndex, itemIndex) as Item
-        var expandableListItemView: View
-        if (view == null) {
-            val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            expandableListItemView = inflater.inflate(R.layout.expandable_list_chid_item, null)
+
+        // Create a new ExpandableListChildItem if the view is null
+        val expandableListChildItemView: View = if (view != null) {
+            view
         } else {
-            expandableListItemView = view
+            val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            inflater.inflate(R.layout.expandable_list_child_item, null)
         }
-        val idTextView: TextView = expandableListItemView.findViewById(R.id.idTextView)
+
+        // Set the idTextView text to the item id
+        val idTextView: TextView = expandableListChildItemView.findViewById(R.id.idTextView)
         idTextView.text = item.id.toString()
 
-        val nameTextView: TextView = expandableListItemView.findViewById(R.id.nameTextView)
+        // Set the nameTextView text to the item name
+        val nameTextView: TextView = expandableListChildItemView.findViewById(R.id.nameTextView)
         nameTextView.text = item.name.toString()
-        return expandableListItemView
+
+        return expandableListChildItemView
     }
 
     override fun isChildSelectable(p0: Int, p1: Int): Boolean {
