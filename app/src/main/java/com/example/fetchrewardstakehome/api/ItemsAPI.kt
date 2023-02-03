@@ -13,7 +13,8 @@ interface ItemsAPI {
     companion object {
         private const val BASE_URL = "https://fetch-hiring.s3.amazonaws.com"
 
-        fun create() : ItemsAPI {
+        // Create the ItemsAPI using Retrofit
+        fun getInstance() : ItemsAPI {
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
