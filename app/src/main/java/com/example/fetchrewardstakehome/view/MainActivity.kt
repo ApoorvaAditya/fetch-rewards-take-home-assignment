@@ -10,31 +10,35 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.fetchrewardstakehome.R
 import com.example.fetchrewardstakehome.adapters.ItemExpandableListAdapter
-import com.example.fetchrewardstakehome.model.Item
-import com.example.fetchrewardstakehome.utilities.AsyncStatus
+import com.example.fetchrewardstakehome.common.AsyncStatus
+import com.example.fetchrewardstakehome.common.ItemPair
 import com.example.fetchrewardstakehome.viewmodel.ItemsViewModel
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var itemsViewModel: ItemsViewModel
+    private lateinit var itemsViewModel: ItemsViewModel
 
-    lateinit var loadingProgressBar: ProgressBar
-    lateinit var errorLinearLayout: LinearLayout
-    lateinit var errorTextView: TextView
+    private lateinit var loadingProgressBar: ProgressBar
+    private lateinit var errorLinearLayout: LinearLayout
+    private lateinit var errorTextView: TextView
 
-    lateinit var expandableListView: ExpandableListView
-    lateinit var expandableListAdapter: ExpandableListAdapter
+    private lateinit var expandableListView: ExpandableListView
+    private lateinit var expandableListAdapter: ExpandableListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Set all the View class members for easy access
         loadingProgressBar = findViewById(R.id.progressBar)
         errorLinearLayout = findViewById(R.id.errorLinearLayout)
         errorTextView = findViewById(R.id.errorTextView)
         expandableListView = findViewById(R.id.expandableListView)
 
+        // Get the ItemViewModel instance
         itemsViewModel = ViewModelProvider(this).get(ItemsViewModel::class.java)
+
+        // Setup Observer for itemsLiveData
         itemsViewModel.itemsLiveData.observe(this, Observer { asyncStatus ->
             when (asyncStatus) {
                 is AsyncStatus.Loading -> {
@@ -51,11 +55,10 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun onData(items: List<Item>) {
+    private fun onData(itemPair: ItemPair) {
         hideLoadingProgressBar()
-        val (listIds, listIdsToItems) = formatItemsForDisplay(items)
-        setExpandableListViewAdapter(listIds, listIdsToItems)
-        Log.i("Main", items.toString())
+        setExpandableListViewAdapter(itemPair)
+        expandableListView.visibility = VISIBLE
     }
 
     private fun onFailure(message: String?) {
@@ -72,29 +75,16 @@ class MainActivity : AppCompatActivity() {
         loadingProgressBar.visibility = GONE
     }
 
-    private fun setExpandableListViewAdapter(listIds: List<Int>, listIdsToItems: Map<Int, List<Item>>) {
+    private fun setExpandableListViewAdapter(itemPair: ItemPair) {
+        val (listIds, listIdsToItems) = itemPair
         expandableListAdapter = ItemExpandableListAdapter(this, listIds, listIdsToItems)
         expandableListView.setAdapter(expandableListAdapter)
+        expandAllGroups(expandableListAdapter)
     }
 
-    private fun formatItemsForDisplay(items: List<Item>) : Pair<List<Int>, Map<Int, List<Item>>> {
-        val listIdsToItems: MutableMap<Int, MutableList<Item>> = HashMap()
-
-        for (item in items) {
-            val key = item.listId
-            if (listIdsToItems.containsKey(key)) {
-                listIdsToItems[key]!!.add(item)
-            } else {
-                listIdsToItems[key] = mutableListOf()
-            }
+    private fun expandAllGroups(expandableListAdapter: ExpandableListAdapter) {
+        for (i in 0 until expandableListAdapter.groupCount) {
+            expandableListView.expandGroup(i)
         }
-
-        for ((key, _) in listIdsToItems.entries) {
-            listIdsToItems[key]!!.sortBy { item -> item.name }
-        }
-
-        val listIds = listIdsToItems.keys.toList().sorted()
-
-        return Pair(listIds, listIdsToItems)
     }
 }
